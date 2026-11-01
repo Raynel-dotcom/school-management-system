@@ -1,11 +1,231 @@
 @import 'tailwindcss';
 
+@plugin '@tailwindcss/forms';
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/*
+|--------------------------------------------------------------------------
+| Design tokens — Campus Service Portal
+|--------------------------------------------------------------------------
+| Education blue as primary, amber as the second academic colour, slate for
+| everything structural. Ported from the portal's Tailwind CDN prototype to
+| compiled v4, so the two MUBS applications share one visual language.
+*/
+
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    --color-brand-50: #eff6ff;
+    --color-brand-100: #dbeafe;
+    --color-brand-200: #bfdbfe;
+    --color-brand-500: #3b82f6;
+    --color-brand-600: #2563eb; /* primary */
+    --color-brand-700: #1d4ed8; /* hover */
+    --color-brand-900: #1e3a8a; /* footer */
+
+    --color-accent-50: #fffbeb;
+    --color-accent-500: #f59e0b;
+    --color-accent-600: #d97706; /* second academic colour */
+
+    --color-canvas: #f8fafc;
+}
+
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+
+    body {
+        background: #ffffff;
+        color: var(--color-slate-900);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+    }
+}
+
+@layer components {
+    /*
+       The sidebar slides in on phones and is simply always there from sm up.
+       Plain CSS rather than utilities: Alpine toggles a class, and a utility
+       like sm:translate-x-0 would be fighting -translate-x-full for the same
+       `translate` property, which it does not reliably win.
+    */
+    .sidebar {
+        position: fixed;
+        inset-block: 0;
+        left: 0;
+        z-index: 40;
+        width: 16rem;
+        padding-top: 4rem;
+        transform: translateX(-100%);
+        transition: transform 0.2s ease;
+    }
+
+    .sidebar.is-open {
+        transform: translateX(0);
+    }
+
+    @media (min-width: 640px) {
+        .sidebar {
+            transform: none;
+        }
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-track {
+        background: #f8fafc;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #2563eb;
+    }
+
+    /* Sidebar navigation item. The markup also carries `group`, which is a
+       marker class and cannot be applied here. */
+    .sidebar-item {
+        @apply flex items-center rounded-lg border-l-[3px] border-transparent
+               py-2 pl-3 pr-2 text-sm font-medium text-slate-500
+               transition-all duration-200 hover:bg-slate-50 hover:text-slate-900;
+    }
+
+    .sidebar-item-active {
+        @apply border-brand-600 bg-brand-50 text-brand-600;
+    }
+
+    .sidebar-icon {
+        @apply h-5 w-5 shrink-0 text-slate-400 transition-colors group-hover:text-brand-600;
+    }
+
+    .sidebar-item-active .sidebar-icon {
+        @apply text-brand-600;
+    }
+
+    .sidebar-section {
+        @apply mb-2 px-3 text-xs font-semibold uppercase text-slate-400;
+    }
+
+    /* Surfaces */
+    .card {
+        @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+    }
+
+    /* Data tables */
+    .data-table {
+        @apply w-full min-w-[640px];
+    }
+
+    .data-table thead tr {
+        @apply border-b border-slate-200 bg-slate-50;
+    }
+
+    .data-table thead th {
+        @apply px-4 py-3 text-left text-sm font-semibold text-slate-500;
+    }
+
+    .data-table tbody tr {
+        @apply border-b border-slate-100 last:border-b-0 hover:bg-slate-50;
+    }
+
+    .data-table tbody td {
+        @apply px-4 py-3 text-sm text-slate-700;
+    }
+
+    /* Buttons */
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
+               text-sm font-semibold transition-colors
+               focus-visible:outline focus-visible:outline-2
+               focus-visible:outline-offset-2 focus-visible:outline-brand-600;
+    }
+
+    .btn-primary {
+        @apply bg-brand-600 text-white hover:bg-brand-700;
+    }
+
+    .btn-secondary {
+        @apply border border-slate-200 bg-white text-slate-700 hover:border-brand-600 hover:text-brand-600;
+    }
+
+    .btn-danger {
+        @apply bg-red-600 text-white hover:bg-red-700;
+    }
+
+    .link {
+        @apply font-medium text-brand-600 hover:text-brand-700;
+    }
+
+    .link-danger {
+        @apply font-medium text-red-600 hover:text-red-700;
+    }
+
+    /* Form controls */
+    .field-label {
+        @apply mb-2 block text-sm font-medium text-slate-600;
+    }
+
+    .field-hint {
+        @apply mt-1.5 text-xs text-slate-400;
+    }
+
+    .input-field {
+        @apply block w-full rounded-xl border border-slate-300 bg-white px-4 py-3
+               text-sm text-slate-900 placeholder-slate-400 shadow-none
+               focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600;
+    }
+
+    /* Same field, with room for a leading icon */
+    .input-field-icon {
+        @apply pl-10;
+    }
+
+    select.input-field {
+        @apply appearance-none bg-no-repeat pr-9;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-position: right 0.75rem center;
+    }
+
+    /* Pills */
+    .pill {
+        @apply inline-flex items-center rounded-full px-2 py-1 text-xs font-medium;
+    }
+
+    .pill-brand {
+        @apply bg-brand-50 text-brand-600;
+    }
+
+    .pill-accent {
+        @apply bg-accent-50 text-accent-600;
+    }
+
+    /* Avatar with initials, as used in the portal's sidebar user card */
+    .avatar {
+        @apply flex h-10 w-10 items-center justify-center rounded-full border
+               border-slate-200 bg-white text-sm font-semibold text-brand-600;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
 }
