@@ -104,3 +104,4 @@ class SchoolManagementTest extends TestCase
         $response->assertSee('CSC101');
     }
 }
+
