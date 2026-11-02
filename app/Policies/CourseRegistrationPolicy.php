@@ -19,3 +19,4 @@ class CourseRegistrationPolicy
         return $user->student !== null && $user->student->id === $registration->student_id;
     }
 }
+
